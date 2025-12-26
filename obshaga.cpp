@@ -6,15 +6,13 @@
 #include "coutAverageForOne.h"
 #include "makeGraph.h"
 #include "changeAverage.h"
-#include "coutAllMarks.h"
 using namespace std;
 
 int main() {
 	SetConsoleCP(1251);
 	setlocale(LC_ALL, "ru_RU.UTF-8");
 	setlocale(LC_ALL, "Russian");
-	cout << "Добро пожаловать!\n";
-	cout << "Привет! Это твой персональный помощник по учёбе.\nЗавалило оценками и сложно понять, как обстоят дела ? Давай разберёмся!\nГотов взять свою учёбу под контроль ? Тогда начинаем!\n" << endl;
+	cout << "Добро пожаловать\n";
 	// Запрашиваем количество предметов
 	int numSubjects;
 	cout << "Введите количество предметов: ";
@@ -95,112 +93,98 @@ int main() {
 
 		std::cin.ignore();
 	}
-	int choice = 0;
-	while (choice != 6) {
-		cout << "\nВыверите следующее действие:\n";
-		cout << "\n1.Как можно изменить средний балл для предмета?\n";
-		cout << "2.Подсчёт общего среднего балла\n";
-		cout << "3.Лучший и худший средний балл\n";
-		cout << "4.График успеваемости\n";
-		cout << "5.Вывод всех отметок\n";
-		cout << "6.Выход\n";
+	cout << "1.Продолжить работу\n";
+	cout << "2.Подсчёт общего среднего балла\n";
+	cout << "3.Лучший и худший\n";
+	cout << "4.График";
+	cout << "5.Выход";
+	int choice;
+	cin >> choice;
+	while (cin.fail() || choice != 1 && choice != 2 && choice!=3 && choice != 4 && choice != 5) { //проверка правильности ввода
+		cout << "Вы ввели неверный символ.Попробуйте ещё раз.\n";
+		cin.clear();
+		cin.ignore(100, '\n');
 		cin >> choice;
-		while (cin.fail() || choice != 1 && choice != 2 && choice != 3 && choice != 4 && choice != 5 && choice != 6) { //проверка правильности ввода
+	}
+	switch (choice) {
+	case 1: {
+	
+		// Поиск предмета
+		int foundIndex;
+		string searchSubject;
+
+		do {
+			cout << "Введите название предмета: ";
+			cin >> searchSubject;
+
+			foundIndex = -1;
+			for (int i = 0; i < numSubjects; i++) {
+				if (subjects[i] == searchSubject) {
+					foundIndex = i;
+					break;
+				}
+			}
+
+			if (foundIndex == -1) {
+				cout << "Предмет \"" << searchSubject << "\" не найден. Попробуйте снова.\n";
+			}
+
+		} while (foundIndex == -1);
+
+		int subjectGradesCount = gradesCount[foundIndex];
+		int* subjectGradesArray = new int[subjectGradesCount];
+
+		// Копируем оценки в одномерный массив
+		for (int j = 0; j < subjectGradesCount; j++) {
+			subjectGradesArray[j] = grades[foundIndex][j];
+		}
+
+		// Выводим результат
+		cout << "\nОценки по предмету \"" << subjects[foundIndex] << "\":\n";
+		for (int j = 0; j < subjectGradesCount; j++) {
+			cout << " " << subjectGradesArray[j];
+		}
+
+		cout << "\n1.Cредний балл для введённого предмета\n";
+		cout << "2.Подсчитать,как можно изменить средний балл\n";
+		cout << "3.Выход\n";
+		int choice1;
+		cin >> choice1;
+		while (cin.fail() || choice1 != 1 && choice1 != 2 && choice1 != 3 && choice1 != 4 && choice1 != 5 && choice1 != 6) { //проверка правильности ввода
 			cout << "Вы ввели неверный символ.Попробуйте ещё раз.\n";
 			cin.clear();
 			cin.ignore(100, '\n');
-			cin >> choice;
+			cin >> choice1;
 		}
-		switch (choice) {
-		case 1: {
-
-			// Поиск предмета
-			int foundIndex;
-			string searchSubject;
-
-			do {
-				cout << "Введите название предмета: ";
-				cin >> searchSubject;
-
-				foundIndex = -1;
-				for (int i = 0; i < numSubjects; i++) {
-					if (subjects[i] == searchSubject) {
-						foundIndex = i;
-						break;
-					}
-				}
-
-				if (foundIndex == -1) {
-					cout << "Предмет \"" << searchSubject << "\" не найден. Попробуйте снова.\n";
-				}
-
-			} while (foundIndex == -1);
-
-			int subjectGradesCount = gradesCount[foundIndex];
-			int* subjectGradesArray = new int[subjectGradesCount];
-
-			// Копируем оценки в одномерный массив
-			for (int j = 0; j < subjectGradesCount; j++) {
-				subjectGradesArray[j] = grades[foundIndex][j];
+		 
+			switch (choice1) {
+			case 1: {
+				coutAverageForOne(subjectGradesArray,subjectGradesCount,foundIndex,subjects);
+				break;
 			}
-
-			// Выводим результат
-			cout << "\nОценки по предмету " << subjects[foundIndex] << ":\n";
-			for (int j = 0; j < subjectGradesCount; j++) {
-				cout << " " << subjectGradesArray[j];
+			case 2: {
+				float sum = 0;
+				for (int j = 0; j < subjectGradesCount; j++) {
+					sum += subjectGradesArray[j];
+				}
+				changeAverage(subjectGradesArray, subjectGradesCount, sum);
 			}
-			int choice1 = 0;
-			while (choice1 != 3) {
-				cout << "\n\n1.Cредний балл для предмета " << searchSubject << "\n";
-				cout << "2.Подсчитать,как можно изменить средний балл\n";
-				cout << "3.Выход\n";
-
-				cin >> choice1;
-				while (cin.fail() || choice1 != 1 && choice1 != 2 && choice1 != 3 && choice1 != 4 && choice1 != 5 && choice1 != 6) { //проверка правильности ввода
-					cout << "Вы ввели неверный символ.Попробуйте ещё раз.\n";
-					cin.clear();
-					cin.ignore(100, '\n');
-					cin >> choice1;
-				}
-
-				switch (choice1) {
-				case 1: {
-					coutAverageForOne(subjectGradesArray, subjectGradesCount, foundIndex, subjects);
-					break;
-				}
-				case 2: {
-					float sum = 0;
-					for (int j = 0; j < subjectGradesCount; j++) {
-						sum += subjectGradesArray[j];
-					}
-					changeAverage(subjectGradesArray, subjectGradesCount, sum);
-				}
-				case 3: {
-					cout << "Конец программы" << endl;
-				}
-				}
+			case 3: {
+				cout << "Конец программы" << endl;
 			}
-		}
-		case 2: {
-			coutMainAverage(numSubjects, grades, gradesCount);
-			break;
-		}
-		case 3: {
-			coutWorstBest(numSubjects, grades, gradesCount, subjects);
-			break;
-		}
-		case 4: {
-			makeGraph(numSubjects, grades, gradesCount, subjects);
-			break;
-		}
-		case 5: {
-			coutAllMarks(numSubjects, grades, subjects, gradesCount);
-			break;
-		}
-		case 6: {
-			cout << "Конец программы, хорошего дня" << endl;
-			break;
-		}
-		}
+			}
+	}
+	case 2: {
+		coutMainAverage(numSubjects,grades,gradesCount);
+		break;
+	}
+	case 3: {
+		coutWorstBest(numSubjects,grades,gradesCount,subjects);
+		break;
+	}
+	case 4: {
+		makeGraph(numSubjects, grades, gradesCount, subjects);
+		break;
+	}
 	}
 }
